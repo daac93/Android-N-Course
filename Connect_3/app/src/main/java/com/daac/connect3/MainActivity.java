@@ -2,10 +2,12 @@ package com.daac.connect3;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,10 +19,15 @@ public class MainActivity extends AppCompatActivity {
     private String [][] board = new String[BOARD_SIZE][BOARD_SIZE];
     private ImageView [][] boardImages = new ImageView[BOARD_SIZE][BOARD_SIZE];
 
+    private LinearLayout winnerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        winnerLayout = findViewById(R.id.winnerLayout);
+
         GridLayout gridLayout = findViewById(R.id.boardLayout);
         int index = 0;
 
@@ -95,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(winner != null) {
-            Toast.makeText(this, winner + " wins!", Toast.LENGTH_LONG).show();
-            cleanBoard();
+            TextView winnerName = findViewById(R.id.winnerName);
+            winnerName.setText(winner + " wins!");
+            winnerLayout.setVisibility(View.VISIBLE);
+            Log.i("Info", "We have a winner! " + winnerName);
         }
     }
 
@@ -113,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void cleanBoard()   {
+    public void cleanBoard(View view)   {
+        winnerLayout.setVisibility(View.INVISIBLE);
+
         counter %= 2;
         for(ImageView[] row : boardImages)  {
             for(ImageView chip : row)   {
