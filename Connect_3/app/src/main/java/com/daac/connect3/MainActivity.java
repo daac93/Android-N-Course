@@ -37,31 +37,33 @@ public class MainActivity extends AppCompatActivity {
         String [] splitCellName = cellName.split("_");
         String color = null;
 
-        if(counter % 2 == 0)    {
-            //Play red
-            color = RED;
-        }   else    {
-            //Play yellow
-            color = YELLOW;
+        if(canPlayAt(Integer.parseInt(splitCellName[0]), Integer.parseInt(splitCellName[1]))) {
+            if (counter % 2 == 0) {
+                //Play red
+                color = RED;
+            } else {
+                //Play yellow
+                color = YELLOW;
+            }
+
+            ImageView chip = (ImageView) view;
+            chip.setTranslationY(-1000f);
+            switch (color) {
+                case RED:
+                    chip.setImageResource(R.drawable.red);
+                    break;
+                case YELLOW:
+                    chip.setImageResource(R.drawable.yellow);
+                    break;
+            }
+            chip.animate().translationYBy(1000f).setDuration(300).start();
+
+            board[Integer.parseInt(splitCellName[0])][Integer.parseInt(splitCellName[1])] = color;
+
+            checkWinner();
+
+            counter++;
         }
-
-        ImageView chip = (ImageView) view;
-        chip.setTranslationY(-1000f);
-        switch(color)   {
-            case RED:
-                chip.setImageResource(R.drawable.red);
-                break;
-            case YELLOW:
-                chip.setImageResource(R.drawable.yellow);
-                break;
-        }
-        chip.animate().translationYBy(1000f).setDuration(300);
-
-        board[Integer.parseInt(splitCellName[0])][Integer.parseInt(splitCellName[1])] = color;
-
-        checkWinner();
-
-        counter++;
     }
 
     public void checkWinner()   {
@@ -88,29 +90,37 @@ public class MainActivity extends AppCompatActivity {
                     }   else    {
                         winner = YELLOW;
                     }
-                    animateWinnerPosition(winningCoordinate);
                 }
             }
         }
 
         if(winner != null) {
             Toast.makeText(this, winner + " wins!", Toast.LENGTH_LONG).show();
-            //cleanBoard();
+            cleanBoard();
         }
     }
 
     private void animateWinnerPosition(int [][] winnerPosition) {
         for(int i = 0; i < BOARD_SIZE; i++) {
-            boardImages[winnerPosition[i][0]][winnerPosition[i][1]].animate().scaleXBy(1.5f).scaleYBy(1.5f).setDuration(3000);
-            boardImages[winnerPosition[i][0]][winnerPosition[i][1]].animate().scaleXBy(-0.5f).scaleYBy(-0.5f).setDuration(3000);
+            boardImages[winnerPosition[i][0]][winnerPosition[i][1]].animate().scaleXBy(0.2f).scaleYBy(0.2f).setDuration(2000);
         }
+    }
+
+    private boolean canPlayAt(int i, int j)    {
+        if(board[i][j] == null && (((i + 1 < BOARD_SIZE) && (board[i + 1][j] != null)) || (i + 1 == BOARD_SIZE))) {
+            return true;
+        }
+        return false;
     }
 
     private void cleanBoard()   {
         counter %= 2;
         for(ImageView[] row : boardImages)  {
             for(ImageView chip : row)   {
-                chip.animate().translationYBy(-1000f).setDuration(300);
+                chip.animate().translationYBy(-1000f).setDuration(600);
+                chip.setImageResource(0);
+                chip.setTranslationY(-1000f);
+                chip.animate().translationY(0).setDuration(0);
             }
         }
         for(int i = 0; i < BOARD_SIZE; i++) {
