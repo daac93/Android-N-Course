@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ArrayAdapter<String> arrayAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,18 +19,19 @@ public class MainActivity extends AppCompatActivity {
 
         SeekBar seekBar = findViewById(R.id.seekBar);
 
+        arrayAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, calculateTimesTable(1));
 
-        //ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_list_item_1, calculateTimesTable(2));
+        ListView listView = findViewById(R.id.timesTableListView);
+        listView.setAdapter(arrayAdapter);
+        //seekBar.setMin(1); - Not compatible with current API level
 
 
-        //seekBar.setMin(1);
-        seekBar.setMax(20);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(getApplicationContext(), android.R.layout.simple_list_item_1, calculateTimesTable(i));
-                ListView listView = findViewById(R.id.timesTableListView);
-                listView.setAdapter(adapter);
+                arrayAdapter.clear();
+                arrayAdapter.addAll(calculateTimesTable(i));
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -44,11 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<Integer> calculateTimesTable(int baseNumber)  {
-        ArrayList<Integer> timesTable = new ArrayList<>(10);
+    private ArrayList<String> calculateTimesTable(int baseNumber)  {
+        ArrayList<String> timesTable = new ArrayList<>(10);
 
         for(int i = 1; i <= 10; i++)    {
-            timesTable.add(i * baseNumber);
+            timesTable.add(Integer.toString(i * baseNumber));
         }
 
         return timesTable;
